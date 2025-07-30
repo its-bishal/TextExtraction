@@ -1,0 +1,10 @@
+fastapi
+uvicorn
+python-multipart
+pydantic
+sqlalchemy
+qdrant-client
+sentence-transformers
+langchain
+PyPDF2
+nltk
