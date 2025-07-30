@@ -1,4 +1,4 @@
-# main.py
+
 import os
 import sys
 import uuid
@@ -28,11 +28,11 @@ from pydantic_models import UploadResponse, SearchResponse, SearchResult, Docume
 # Download NLTK punkt tokenizer for sentence splitting
 try:
     nltk.data.find('tokenizers/punkt')
-except Exception: # Changed from nltk.downloader.DownloadError to a more general Exception
+except Exception:
     nltk.download('punkt')
 
 
-# --- Configuration ---
+# Configuration
 # Database for metadata
 SQLITE_DATABASE_URL = "sqlite:///./metadata.db"
 
@@ -88,7 +88,7 @@ except Exception as e:
     sys.exit(1)
 
 
-# --- FastAPI Application ---
+# FastAPI Application
 app = FastAPI(
     title="Document Processing Backend",
     description="API for uploading documents, chunking, embedding, and storing in vector database.",
@@ -130,7 +130,7 @@ async def upload_document(
     if not extracted_text:
         raise HTTPException(status_code=400, detail="Could not extract text from the document.")
 
-    # Apply chunking strategy
+   
     chunks = []
     if chunking_method == "recursive":
         chunks = recursive_chunking(extracted_text)
@@ -147,7 +147,7 @@ async def upload_document(
     # Generate embeddings for chunks and prepare for Qdrant
     points = []
     chunks_info_for_metadata = []
-    document_id = str(uuid.uuid4()) # Unique ID for the document
+    document_id = str(uuid.uuid4())
 
     for i, chunk in enumerate(chunks):
         chunk_id = str(uuid.uuid4())
@@ -266,9 +266,3 @@ async def get_all_documents():
         raise HTTPException(status_code=500, detail=f"Error retrieving documents: {e}")
     finally:
         db.close()
-
-# To run the application:
-# 1. Save this code as `main.py`.
-# 2. Make sure you have Qdrant running (e.g., via Docker: `docker run -p 6333:6333 qdrant/qdrant`).
-# 3. Run from your terminal: `uvicorn main:app --reload`
-# 4. Access the API documentation at `http://127.0.0.1:8000/docs`
